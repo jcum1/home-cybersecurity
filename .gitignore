@@ -1,0 +1,12 @@
+# Elastic Stack binaries (large, downloaded separately)
+elasticsearch-9.2.4/
+kibana-9.2.4/
+filebeat-9.2.4-windows-x86_64/
+osquery-5.21.0.windows_x86_64/
+
+# Claude Code internal files
+.claude/
+
+# Log output
+*.log
+logs/
