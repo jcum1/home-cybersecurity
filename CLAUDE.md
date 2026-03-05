@@ -28,6 +28,12 @@ elasticsearch-9.2.4\bin\elasticsearch-reset-password.bat -u elastic -i
 ```
 Note the new password. Then edit `filebeat-9.2.4-windows-x86_64\filebeat.yml` and replace `CHANGE_ME`.
 
+**Step 1b — Set the environment variable** (do this once):
+```bat
+setx ELASTIC_PASSWORD "Q3DgSMX82*lD2oO_HhKv"
+```
+This is used by the Python and PowerShell scripts. Open a new terminal after running this.
+
 **Step 2 — Start the stack:**
 ```bat
 start-stack.bat
