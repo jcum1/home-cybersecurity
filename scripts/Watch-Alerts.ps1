@@ -11,8 +11,13 @@
 $EsUrl = "https://localhost:9200"
 $Index = "security-alerts"
 $Username = "elastic"
-$Password = "Q3DgSMX82*lD2oO_HhKv"
+$Password = $env:ELASTIC_PASSWORD
 $PollInterval = 30  # seconds
+
+if (-not $Password) {
+    Write-Error "ELASTIC_PASSWORD environment variable is not set. Set it with: setx ELASTIC_PASSWORD '<your-password>'"
+    exit 1
+}
 
 # Track the last alert timestamp we've seen
 $script:LastSeen = (Get-Date).ToUniversalTime().ToString("o")

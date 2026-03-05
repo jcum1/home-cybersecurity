@@ -12,6 +12,7 @@ This creates:
 """
 
 import json
+import os
 import urllib.request
 import urllib.error
 import base64
@@ -19,7 +20,11 @@ import sys
 
 KIBANA_URL = "http://localhost:5601"
 USERNAME = "elastic"
-PASSWORD = "Q3DgSMX82*lD2oO_HhKv"
+PASSWORD = os.environ.get("ELASTIC_PASSWORD")
+if not PASSWORD:
+    print("ERROR: ELASTIC_PASSWORD environment variable is not set.")
+    print("Set it with: setx ELASTIC_PASSWORD \"<your-password>\"")
+    sys.exit(1)
 DATA_VIEW_ID = "08d0cbeb-79dc-4dff-bcc4-6cbeef30022b"
 ALERTS_INDEX = "security-alerts"
 
