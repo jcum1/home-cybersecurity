@@ -211,7 +211,7 @@ RULES = [
     {
         "name": "Short TTL DNS Spike",
         "query": 'collector: "Collect-DNS" AND ttl_seconds < 60 AND ttl_seconds > 0',
-        "threshold": 10,
+        "threshold": 50,
         "interval": "5m",
         "tags": ["security", "medium", "dns"],
     },
