@@ -63,7 +63,9 @@ function Check-Alerts {
     } | ConvertTo-Json -Depth 10
 
     try {
-        # Skip SSL certificate validation for self-signed ES cert
+        # PowerShell 5.1 does not support -SkipCertificateCheck or CA cert pinning
+        # for Invoke-RestMethod. TrustAll callback is the standard workaround for
+        # self-signed ES certs in PS 5.1.
         if (-not ([System.Management.Automation.PSTypeName]'TrustAll').Type) {
             Add-Type @"
 using System.Net;
@@ -79,13 +81,9 @@ public class TrustAll {
         }
         [TrustAll]::Enable()
 
-        $headers = @{
-            "Authorization" = "Basic $cred"
-            "Content-Type"  = "application/json"
-        }
-
         $response = Invoke-RestMethod -Uri "$EsUrl/$Index/_search" `
-            -Method POST -Body $body -Headers $headers `
+            -Method POST -Body $body `
+            -Headers @{ "Authorization" = "Basic $cred"; "Content-Type" = "application/json" } `
             -ErrorAction Stop
 
         $hits = $response.hits.hits

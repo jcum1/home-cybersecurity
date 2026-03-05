@@ -32,4 +32,13 @@ foreach ($script in $Collectors) {
     }
 }
 
+# Clean up log files older than 7 days
+$LogDir = "$env:USERPROFILE\Observability\logs\pslogs"
+$OldFiles = Get-ChildItem -Path $LogDir -Filter "*.json" -ErrorAction SilentlyContinue |
+    Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-7) }
+if ($OldFiles) {
+    $OldFiles | Remove-Item -Force
+    Write-Host "Cleaned up $($OldFiles.Count) log files older than 7 days" -ForegroundColor DarkGray
+}
+
 Write-Host "=== Collection complete ===" -ForegroundColor Green
