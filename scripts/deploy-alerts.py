@@ -40,7 +40,8 @@ def api_call(method, path, body=None):
     if data:
         req.add_header("Content-Type", "application/json")
     resp = urllib.request.urlopen(req)
-    return json.loads(resp.read().decode())
+    body = resp.read().decode()
+    return json.loads(body) if body else None
 
 
 def find_connector_by_name(name):
