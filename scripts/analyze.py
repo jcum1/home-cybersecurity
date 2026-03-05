@@ -128,14 +128,14 @@ def analyse_processes(records: list[dict]) -> None:
     if suspicious:
         for r in suspicious:
             finding("HIGH",
-                    f"Process running from suspicious location: {r['name']} (PID {r['pid']})",
+                    f"Process running from suspicious location: {r.get('name', '?')} (PID {r.get('pid', '?')})",
                     f"Path: {r.get('path')}")
     else:
         finding("OK", "No processes running from Temp/Downloads/unusual locations.")
 
     print(f"\n  {BOLD}Top 5 processes by memory:{RESET}")
     for r in big_mem:
-        print(f"    {r.get('working_set_mb', 0):>8.1f} MB  {r['name']} (PID {r['pid']})")
+        print(f"    {r.get('working_set_mb', 0):>8.1f} MB  {r.get('name', '?')} (PID {r.get('pid', '?')})")
 
 
 def analyse_network(records: list[dict]) -> None:
@@ -160,7 +160,7 @@ def analyse_network(records: list[dict]) -> None:
         finding("MEDIUM", f"{len(unusual)} process(es) with outbound connections not in the known-good list:")
         for name, conns in list(unusual.items())[:8]:
             remotes = ", ".join(
-                f"{c['remote_address']}:{c['remote_port']}" for c in conns[:3]
+                f"{c.get('remote_address', '?')}:{c.get('remote_port', '?')}" for c in conns[:3]
             )
             label = name if name else f"PID {conns[0].get('pid', '?')}"
             print(f"    {YELLOW}{label}{RESET} → {remotes}")
@@ -176,7 +176,7 @@ def analyse_network(records: list[dict]) -> None:
         finding("INFO", f"{len(weird_ports)} connection(s) to non-standard remote ports (not 80/443/53):")
         for r in weird_ports[:8]:
             proc = r.get("process_name") or f"PID {r.get('pid', '?')}"
-            print(f"    {proc} → {r['remote_address']}:{r['remote_port']}")
+            print(f"    {proc} → {r.get('remote_address', '?')}:{r.get('remote_port', '?')}")
 
 
 def analyse_dns(records: list[dict]) -> None:
@@ -193,7 +193,7 @@ def analyse_dns(records: list[dict]) -> None:
     if short_ttl:
         finding("MEDIUM", f"{len(short_ttl)} entry/entries with very short TTL (< 60s) — possible fast-flux:")
         for r in short_ttl[:5]:
-            print(f"    {r['entry']}  TTL={r['ttl_seconds']}s")
+            print(f"    {r.get('entry', '?')}  TTL={r.get('ttl_seconds', '?')}s")
     else:
         finding("OK", "No suspiciously short DNS TTLs.")
 
@@ -203,14 +203,14 @@ def analyse_dns(records: list[dict]) -> None:
     if unusual_tld:
         finding("INFO", f"{len(unusual_tld)} entry/entries with unusual TLDs:")
         for r in unusual_tld[:8]:
-            print(f"    {r['entry']}")
+            print(f"    {r.get('entry', '?')}")
 
     # DGA-like names
     dga_like = [r for r in records if looks_like_dga(r.get("entry", ""))]
     if dga_like:
         finding("MEDIUM", f"{len(dga_like)} entry/entries with DGA-like (random-looking) names:")
         for r in dga_like[:5]:
-            print(f"    {r['entry']}")
+            print(f"    {r.get('entry', '?')}")
     else:
         finding("OK", "No DGA-like domain names detected.")
 
@@ -226,7 +226,7 @@ def analyse_defender(records: list[dict]) -> None:
 
     if status_rec:
         if status_rec.get("error"):
-            finding("INFO", f"Could not read AV status: {status_rec['error']}")
+            finding("INFO", f"Could not read AV status: {status_rec.get('error', '?')}")
         else:
             av_ok   = status_rec.get("antivirus_enabled")
             rt_ok   = status_rec.get("realtime_protection_enabled")
@@ -263,7 +263,7 @@ def analyse_scheduled_tasks(records: list[dict]) -> None:
     if suspicious:
         finding("HIGH", f"{len(suspicious)} scheduled task(s) running from suspicious paths:")
         for r in suspicious[:5]:
-            print(f"    Name:   {r['task_name']}")
+            print(f"    Name:   {r.get('task_name', '?')}")
             print(f"    Action: {r.get('action')}")
     else:
         finding("OK", "No scheduled tasks running from suspicious locations.")
@@ -272,7 +272,7 @@ def analyse_scheduled_tasks(records: list[dict]) -> None:
         finding("MEDIUM",
                 f"{len(no_author)} active task(s) have no listed author (unusual for legitimate software):")
         for r in no_author[:5]:
-            print(f"    {r['task_name']}  |  {r.get('action', '')[:80]}")
+            print(f"    {r.get('task_name', '?')}  |  {r.get('action', '')[:80]}")
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 

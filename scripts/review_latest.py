@@ -26,11 +26,11 @@ suspicious = [p for p in procs if p.get("path") and any(f in p["path"].lower() f
 print(f"=== PROCESSES ({len(procs)} total) ===")
 print(f"Suspicious paths: {len(suspicious)}")
 for p in suspicious:
-    print(f"  [!] {p['name']} PID {p['pid']} -> {p.get('path')}")
+    print(f"  [!] {p.get('name', '?')} PID {p.get('pid', '?')} -> {p.get('path')}")
 top = sorted(procs, key=lambda x: x.get("working_set_mb", 0), reverse=True)[:5]
 print("Top memory:")
 for p in top:
-    print(f"  {p.get('working_set_mb',0):>8.1f} MB  {p['name']}")
+    print(f"  {p.get('working_set_mb',0):>8.1f} MB  {p.get('name', '?')}")
 
 # NETWORK
 conns = load("network")
